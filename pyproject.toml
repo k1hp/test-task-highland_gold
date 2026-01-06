@@ -10,3 +10,11 @@ dependencies = [
     "pydantic>=2.12.5",
     "pyqt5>=5.15.11",
 ]
+
+[tool.uv]
+
+required-environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "sys_platform == 'win32' and platform_machine == 'AMD64'",
+    # Add other required environments as needed (e.g., macOS, different architectures)
+]
