@@ -1,14 +1,47 @@
+import sys
 import pathlib
+from PyQt5.QtWidgets import QApplication
 
 from src.core.db_manager import SQLiteDataManager
 from src.core.excel_parser import ExcelParser
 from src.services.import_service import ImportService
+from src.services.view_service import ViewService
+from src.ui.main_window import MainWindow
 
-BASE_DIR = pathlib.Path(__file__).parent.parent
-DB_PATH = BASE_DIR / "task" / "database"
 
-if __name__ == '__main__':
-    db_manager = SQLiteDataManager(DB_PATH)
-    parser = ExcelParser()
-    service = ImportService(parser=parser, db_manager=db_manager)
-    service.import_data(file_path="../task/journal.xlsx")
+def main():
+    app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+
+    BASE_DIR = pathlib.Path(__file__).parent.parent
+    DB_PATH = BASE_DIR / "task" / "database"
+
+    if not DB_PATH.exists():
+        print(f"Файл БД не найден: {DB_PATH}")
+        print(f"Убедитесь, что база данных находится в {DB_PATH}")
+        return
+
+    # Создаем зависимости (Dependency Injection)
+    try:
+        db_manager = SQLiteDataManager(str(DB_PATH))
+        parser = ExcelParser()
+        import_service = ImportService(parser=parser, db_manager=db_manager)
+        view_service = ViewService(db_manager=db_manager)
+
+    except Exception as e:
+        print(f"Ошибка инициализации сервисов: {e}")
+        return
+
+    # Создаем главное окно, передавая сервисы
+    window = MainWindow(
+        import_service=import_service,
+        view_service=view_service
+    )
+
+    window.show()
+
+    return app.exec_()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
