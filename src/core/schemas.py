@@ -11,6 +11,12 @@ class HoleSchema(BaseModel):
     level_: PositiveFloat = Field(alias="_level")
     issue_date: str
 
+    @field_validator("*")
+    def no_empty_strings(cls, v):
+        if isinstance(v, str) and not v.strip() or not v:
+            raise ValueError("Строка не может быть пустой")
+        return v
+
     @field_validator("issue_date", mode="before")
     @classmethod
     def convert_issue_date(cls, value):
@@ -27,3 +33,10 @@ class AssaySchema(BaseModel):
     from_: float = Field(alias="_from")
     to_: float = Field(alias="_to")
     Au: PositiveFloat
+
+    @field_validator("*")
+    def no_empty_strings(cls, v):
+        if (isinstance(v, str) and not v.strip()) or not v:
+            raise ValueError("Строка не может быть пустой")
+
+        return v

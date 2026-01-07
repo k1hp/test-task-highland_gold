@@ -9,6 +9,7 @@ dependencies = [
     "pandas>=2.3.3",
     "pydantic>=2.12.5",
     "pyqt5>=5.15.11",
+    "pytest>=9.0.2",
 ]
 
 [tool.uv]
