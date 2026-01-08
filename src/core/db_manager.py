@@ -1,13 +1,14 @@
 from typing import List
 import sqlite3
 
+from src.core.config import LOGGER
 from src.core.schemas import HoleSchema, AssaySchema
 
 
 class SQLiteDataManager:
     def __init__(self, db_path: str):
         self.connection = sqlite3.connect(db_path)
-        print("db_path", db_path)
+        LOGGER.info("db_path", db_path)
 
     def save_import_data(
         self, holes: List[HoleSchema], assays: List[AssaySchema]
@@ -32,7 +33,7 @@ class SQLiteDataManager:
             row = cursor.fetchone()
 
             if row is None:
-                print(
+                LOGGER.warning(
                     f"Предупреждение: скважина '{assay.name}' не найдена, пропускаем assay"
                 )
                 continue

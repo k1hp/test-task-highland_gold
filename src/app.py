@@ -6,7 +6,8 @@ from src.core.excel_parser import ExcelParser
 from src.services.import_service import ImportService
 from src.services.view_service import ViewService
 from src.ui.main_window import MainWindow
-from src.core.config import DB_PATH
+from src.core.config import DB_PATH, LOGGER
+
 
 def main():
     app = QApplication(sys.argv)
@@ -15,8 +16,8 @@ def main():
 
 
     if not DB_PATH.exists():
-        print(f"Файл БД не найден: {DB_PATH}")
-        print(f"Убедитесь, что база данных находится в {DB_PATH}")
+        LOGGER.warning(f"Файл БД не найден: {DB_PATH}")
+        LOGGER.info(f"Убедитесь, что база данных находится в {DB_PATH}")
         return
 
     # Создаем зависимости (Dependency Injection)
@@ -27,7 +28,7 @@ def main():
         view_service = ViewService(db_manager=db_manager)
 
     except Exception as e:
-        print(f"Ошибка инициализации сервисов: {e}")
+        LOGGER.error(f"Ошибка инициализации сервисов: {e}")
         return
 
     # Создаем главное окно, передавая сервисы
