@@ -63,8 +63,18 @@ class TestHoleSchema:
                 name=sample_hole_name,
                 **sample_coordinates,
                 lenght=-150.0,
-                level_=10.0,
-                issue_date="2024-01-15"
+                _level=10.0,
+                issue_date="2020115"
+            )
+
+    def test_hole_with_zero_length(self, sample_hole_name, sample_coordinates):
+        with pytest.raises(ValueError):
+            HoleSchema(
+                name=sample_hole_name,
+                **sample_coordinates,
+                lenght=0.0,
+                _level=10.0,
+                issue_date="2020115"
             )
 
 
@@ -87,13 +97,12 @@ class TestAssaySchema:
         assert "_to" in result_dict
 
     def test_assay_with_zero_au(self, sample_hole_name):
-        with pytest.raises(ValueError):
-            AssaySchema(
-                name=sample_hole_name,
-                from_=0.0,
-                to_=10.0,
-                Au=0.0
-            )
+        assert AssaySchema(
+            name=sample_hole_name,
+            _from=0.0,
+            _to=10.0,
+            Au=0.0
+        )
 
 
 def test_hole_and_assay_connection(valid_hole_input_data, valid_assay_input_data):

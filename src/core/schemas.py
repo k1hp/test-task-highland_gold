@@ -2,6 +2,8 @@ from pydantic import BaseModel, field_validator, Field
 from pydantic.types import PositiveFloat
 import math
 
+from pydantic.types import NonNegativeFloat
+
 
 class EmptyFieldMixin:
     @field_validator("*", mode="before")
@@ -43,4 +45,11 @@ class AssaySchema(BaseModel, EmptyFieldMixin):
     name: str
     from_: float = Field(alias="_from")
     to_: float = Field(alias="_to")
-    Au: PositiveFloat
+    Au: NonNegativeFloat
+
+
+class HoleDisplaySchema(BaseModel):
+    name: str = Field(alias="Имя скважины")
+    from_depth: float = Field(alias="ОТ")
+    to_depth: float = Field(alias="ДО")
+    gold_content: NonNegativeFloat = Field(alias="Au")
