@@ -18,13 +18,15 @@ class ExcelParser:
         holes_df = pandas.read_excel(file_path, sheet_name="Holes")
         assays_df = pandas.read_excel(file_path, sheet_name="Assay")
 
-        holes_df.columns = holes_df.columns.str.strip()
-        assays_df.columns = assays_df.columns.str.strip()
+        def process_df(df, column_mapping):
+            if df.empty:
+                return []
 
-        holes_df = holes_df.rename(columns=self.HOLE_COLUMN_MAPPING)
-        assays_df = assays_df.rename(columns=self.ASSAY_COLUMN_MAPPING)
+            df.columns = df.columns.str.strip()
+            df = df.rename(columns=column_mapping)
+            return df.to_dict("records")
 
         return {
-            "holes": holes_df.to_dict("records"),
-            "assays": assays_df.to_dict("records"),
+            "holes": process_df(holes_df, self.HOLE_COLUMN_MAPPING),
+            "assays": process_df(assays_df, self.ASSAY_COLUMN_MAPPING),
         }
