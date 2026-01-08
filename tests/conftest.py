@@ -1,7 +1,10 @@
+import sqlite3
+
 import pytest
 
 from src.core.config import BASE_DIR
 from src.core.excel_parser import ExcelParser
+from src.core.schemas import HoleSchema, AssaySchema
 
 
 @pytest.fixture
@@ -55,10 +58,8 @@ def wrong_excel_file_path() -> str:
 
 @pytest.fixture
 def sample_excel_path(tmp_path):
-    """Создает временный Excel файл для тестов"""
     import pandas as pd
 
-    # Создаем тестовые данные
     holes_data = pd.DataFrame({
         "ИМЯ": ["Hole1", "Hole2"],
         "X": [100.0, 200.0],
@@ -76,7 +77,6 @@ def sample_excel_path(tmp_path):
         "Au": [1.5, 2.5, 3.5]
     })
 
-    # Сохраняем во временный файл
     file_path = tmp_path / "test.xlsx"
     with pd.ExcelWriter(file_path) as writer:
         holes_data.to_excel(writer, sheet_name='Holes', index=False)
@@ -84,17 +84,77 @@ def sample_excel_path(tmp_path):
 
     return str(file_path)
 
+@pytest.fixture
+def in_memory_db():
+    connection = sqlite3.connect(":memory:")
+    cursor = connection.cursor()
+    cursor.execute("""
+        CREATE TABLE holes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            x REAL,
+            y REAL,
+            z REAL,
+            lenght REAL,
+            _level REAL,
+            issue_date TEXT
+        )
+    """)
+    cursor.execute("""
+        CREATE TABLE assay (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            hole_id INTEGER,
+            _from REAL,
+            _to REAL,
+            Au REAL,
+            FOREIGN KEY (hole_id) REFERENCES holes(id)
+        )
+    """)
+    yield connection
+    connection.close()
 
-# Интеграционный тест с реальным Excel файлом
-def test_parser_with_real_file(create_parser, sample_excel_path):
-    """Интеграционный тест с реальным Excel файлом"""
-    parser = create_parser
-    result = parser.parse(sample_excel_path)
+@pytest.fixture
+def sample_holes():
+    return [
+        HoleSchema(
+            name="Hole1",
+            x=100.0,
+            y=200.0,
+            z=50.0,
+            lenght=150.0,
+            _level=10.0,
+            issue_date="422024011523"
+        ),
+        HoleSchema(
+            name="Hole2",
+            x=200.0,
+            y=300.0,
+            z=60.0,
+            lenght=250.0,
+            _level=20.0,
+            issue_date="2320240116"
+        )
+    ]
 
-    assert len(result["holes"]) == 2
-    assert len(result["assays"]) == 3
-
-    # Проверяем маппинг
-    first_hole = result["holes"][0]
-    assert "name" in first_hole  # Было "ИМЯ"
-    assert "_level" in first_hole  # Было "ГОРИЗОНТ"
+@pytest.fixture
+def sample_assays():
+    return [
+        AssaySchema(
+            name="Hole1",
+            _from=0.0,
+            _to=10.0,
+            Au=1.5
+        ),
+        AssaySchema(
+            name="Hole1",
+            _from=10.0,
+            _to=20.0,
+            Au=2.5
+        ),
+        AssaySchema(
+            name="Hole2",
+            _from=0.0,
+            _to=15.0,
+            Au=3.5
+        )
+    ]
