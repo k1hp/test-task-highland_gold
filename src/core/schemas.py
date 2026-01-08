@@ -1,12 +1,22 @@
 from pydantic import BaseModel, field_validator, Field
 from pydantic.types import PositiveFloat
+import math
+
 
 class EmptyFieldMixin:
-    @field_validator("*")
-    def no_empty_strings(cls, v):
-        if (isinstance(v, str) and not v.strip()) or (not isinstance(v, (int, float)) and not v):
-            raise ValueError("Строка не может быть пустой")
+    @field_validator("*", mode="before")
+    def no_empty_excel_values(cls, v):
+        if v is None:
+            raise ValueError("Поле не может быть пустым")
+
+        if isinstance(v, float) and math.isnan(v):
+            raise ValueError("Поле не может быть пустым")
+
+        if isinstance(v, str) and not v.strip():
+            raise ValueError("Поле не может быть пустым")
+
         return v
+
 
 
 class HoleSchema(BaseModel, EmptyFieldMixin):
