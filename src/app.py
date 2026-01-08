@@ -1,5 +1,4 @@
 import sys
-import pathlib
 from PyQt5.QtWidgets import QApplication
 
 from src.core.db_manager import SQLiteDataManager
@@ -7,14 +6,13 @@ from src.core.excel_parser import ExcelParser
 from src.services.import_service import ImportService
 from src.services.view_service import ViewService
 from src.ui.main_window import MainWindow
-
+from src.core.config import DB_PATH
 
 def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
 
-    BASE_DIR = pathlib.Path(__file__).parent.parent
-    DB_PATH = BASE_DIR / "task" / "database"
+
 
     if not DB_PATH.exists():
         print(f"Файл БД не найден: {DB_PATH}")
