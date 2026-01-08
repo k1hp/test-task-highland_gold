@@ -1,8 +1,15 @@
 from pydantic import BaseModel, field_validator, Field
 from pydantic.types import PositiveFloat
 
+class EmptyFieldMixin:
+    @field_validator("*")
+    def no_empty_strings(cls, v):
+        if (isinstance(v, str) and not v.strip()) or (not isinstance(v, (int, float)) and not v):
+            raise ValueError("Строка не может быть пустой")
+        return v
 
-class HoleSchema(BaseModel):
+
+class HoleSchema(BaseModel, EmptyFieldMixin):
     name: str
     x: float
     y: float
@@ -10,12 +17,6 @@ class HoleSchema(BaseModel):
     lenght: PositiveFloat
     level_: PositiveFloat = Field(alias="_level")
     issue_date: str
-
-    @field_validator("*")
-    def no_empty_strings(cls, v):
-        if isinstance(v, str) and not v.strip() or not v:
-            raise ValueError("Строка не может быть пустой")
-        return v
 
     @field_validator("issue_date", mode="before")
     @classmethod
@@ -28,15 +29,8 @@ class HoleSchema(BaseModel):
         return str(value)
 
 
-class AssaySchema(BaseModel):
+class AssaySchema(BaseModel, EmptyFieldMixin):
     name: str
     from_: float = Field(alias="_from")
     to_: float = Field(alias="_to")
     Au: PositiveFloat
-
-    @field_validator("*")
-    def no_empty_strings(cls, v):
-        if (isinstance(v, str) and not v.strip()) or not v:
-            raise ValueError("Строка не может быть пустой")
-
-        return v
