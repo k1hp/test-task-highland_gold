@@ -146,7 +146,7 @@ class MainWindow(QMainWindow):
         self.setCursor(Qt.WaitCursor)
 
         try:
-            data = self.view_service.get_wells_for_display()
+            data = self.view_service.get_holes_for_display()
 
             headers = ["Имя скважины", "ОТ", "ДО", "Au"]
 
