@@ -33,6 +33,8 @@ class ImageResponse(ImageBase):
     file_path: str
     public_url: str
     project_id: int
+    download_url: str
+    view_url: str
 
     model_config = ConfigDict(from_attributes=True)
 
