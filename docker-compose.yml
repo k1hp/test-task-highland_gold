@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/pgdata
     env_file:
-      - .env
+      - ./.env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
@@ -20,6 +20,16 @@ services:
     ports:
       - ${POSTGRES_PORT?Variable not set}:5432
 
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads_volume:/backend/uploaded_files
+      - ./.env:/backend/.env
+    depends_on:
+      - postgres_db
 
 volumes:
   postgres_data:
+  uploads_volume:

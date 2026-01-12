@@ -4,11 +4,11 @@ import pathlib
 
 
 BASE_DIR = pathlib.Path(__file__).parent.parent.parent.absolute()
-
+print(BASE_DIR)
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=BASE_DIR / ".env",
+        env_file=BASE_DIR / "backend" / ".env",
         env_ignore_empty=True,
         extra="ignore",
     )
@@ -30,6 +30,13 @@ class Settings(BaseSettings):
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
         )
+
+    @computed_field
+    @property
+    def UPLOAD_DIR(self) -> pathlib.Path:
+        upload_path = BASE_DIR / 'uploaded_files'
+        upload_path.mkdir(parents=True, exist_ok=True)
+        return upload_path
 
 
 settings = Settings()

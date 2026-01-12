@@ -1,8 +1,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from backend.app.config import settings
+from app.config import settings
 
-engine = create_engine(settings.SQLALCHEMY_DATABASE_URI.__str__())
+engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 
-Session = sessionmaker(engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
