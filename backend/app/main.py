@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import os
 import shutil
@@ -18,6 +19,24 @@ app = FastAPI(
     title="Project Manager API",
     version="1.0.0",
     description="API for project and image management"
+)
+
+# access docs
+origins = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"]  # for file download
 )
 
 upload_dir = settings.UPLOAD_DIR
