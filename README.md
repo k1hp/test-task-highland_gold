@@ -37,6 +37,11 @@ docker-compose up --build
 docker-compose up -d --build
 ```
 
+### 3. Доступ 
+- Frontend - http://localhost:8080
+- API - http://localhost:8000
+- API documentation - http://localhost:8000/docs
+
 ## PS
 ### Почему выбрана текущая архитектура:
 - **Минимализм**: Фокус на основных требованиях ТЗ
